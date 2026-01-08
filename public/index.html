@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RMEYE Checklist - Digital Project Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0f1c;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1a2235;
+      --bg-card: #1e2942;
+      --accent-cyan: #22d3ee;
+      --accent-blue: #3b82f6;
+      --accent-purple: #a855f7;
+      --accent-green: #10b981;
+      --accent-yellow: #fbbf24;
+      --accent-orange: #f97316;
+      --accent-red: #ef4444;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #2d3a52;
+      --shadow-glow: 0 0 40px rgba(34, 211, 238, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(ellipse at 20% 0%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3);
+    }
+
+    .logo h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: var(--bg-primary);
+      box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(34, 211, 238, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--accent-cyan);
+    }
+
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Dashboard View */
+    .dashboard {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: linear-gradient(145deg, var(--bg-card), var(--bg-tertiary));
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-cyan);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .project-card h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-meta {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .project-progress {
+      margin-top: 1rem;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-primary);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .stat-completed { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+    .stat-progress { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+    .stat-pending { background: rgba(251, 191, 36, 0.15); color: var(--accent-yellow); }
+
+    .new-project-card {
+      background: transparent;
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 220px;
+    }
+
+    .new-project-card:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(34, 211, 238, 0.05);
+    }
+
+    .new-project-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .new-project-card span {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+    }
+
+    /* Checklist View */
+    .checklist-header {
+      margin-bottom: 2rem;
+    }
+
+    .project-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-info h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-info p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .share-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .share-box input {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      width: 280px;
+    }
+
+    .btn-copy {
+      padding: 0.6rem 1rem;
+      background: var(--accent-cyan);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-copy:hover {
+      background: var(--accent-blue);
+    }
+
+    .overall-progress {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-tertiary));
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .progress-main {
+      flex: 1;
+    }
+
+    .progress-main h4 {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-bar-large {
+      height: 12px;
+      background: var(--bg-primary);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-percentage {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .stat-value.completed { color: var(--accent-green); }
+    .stat-value.in-progress { color: var(--accent-blue); }
+    .stat-value.pending { color: var(--accent-yellow); }
+
+    /* Phase Sections */
+    .phases-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .phase-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .phase-header {
+      background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-card));
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .phase-header:hover {
+      background: var(--bg-card);
+    }
+
+    .phase-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .phase-badge {
+      padding: 0.4rem 0.8rem;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--bg-primary);
+    }
+
+    .phase-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .phase-progress-mini {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .phase-progress-bar {
+      width: 150px;
+      height: 6px;
+      background: var(--bg-primary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .expand-icon {
+      color: var(--text-secondary);
+      transition: transform 0.3s ease;
+    }
+
+    .phase-section.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+
+    .phase-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .phase-section.expanded .phase-content {
+      max-height: 5000px;
+    }
+
+    .section-group {
+      border-top: 1px solid var(--border-color);
+    }
+
+    .section-header {
+      background: rgba(34, 211, 238, 0.05);
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      font-size: 0.95rem;
+    }
+
+    .checklist-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .checklist-table th {
+      text-align: left;
+      padding: 1rem 1.5rem;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .checklist-table td {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .checklist-table tr:hover {
+      background: rgba(34, 211, 238, 0.03);
+    }
+
+    .item-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      max-width: 400px;
+    }
+
+    .select-input {
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      min-width: 130px;
+    }
+
+    .select-input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    .select-input.completed { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1); }
+    .select-input.in-progress { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); }
+    .select-input.pending { border-color: var(--accent-yellow); background: rgba(251, 191, 36, 0.1); }
+    .select-input.not-applicable { border-color: var(--text-muted); background: rgba(100, 116, 139, 0.1); color: var(--text-muted); }
+
+    .text-input {
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      width: 100%;
+      min-width: 100px;
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    .date-input {
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--accent-green);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      color: var(--accent-green);
+      font-size: 1.25rem;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 300px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-cyan);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-title-bar {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .share-box {
+        flex-direction: column;
+      }
+
+      .share-box input {
+        width: 100%;
+      }
+
+      .overall-progress {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        justify-content: space-around;
+      }
+
+      .checklist-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">📋</div>
+        <div>
+          <h1>RMEYE Checklist</h1>
+          <div class="logo-subtitle">Digital Project Tracker</div>
+        </div>
+      </div>
+      <nav class="nav-actions" id="navActions">
+        <button class="btn btn-primary" onclick="showNewProjectModal()">
+          <span>+</span> New Project
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container" id="mainContent">
+    <!-- Content loaded dynamically -->
+  </main>
+
+  <!-- New Project Modal -->
+  <div class="modal-overlay" id="newProjectModal">
+    <div class="modal">
+      <h2>📁 Create New Project</h2>
+      <form id="newProjectForm">
+        <div class="form-group">
+          <label for="projectName">Project Name *</label>
+          <input type="text" id="projectName" placeholder="e.g., HQ Transformer Monitoring" required>
+        </div>
+        <div class="form-group">
+          <label for="customerName">Customer Name</label>
+          <input type="text" id="customerName" placeholder="e.g., Hydro Quebec">
+        </div>
+        <div class="form-group">
+          <label for="createdBy">Your Name *</label>
+          <input type="text" id="createdBy" placeholder="e.g., John Doe" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span id="toastMessage">Saved successfully!</span>
+  </div>
+
+  <script>
+    let currentProjectId = null;
+    let checklistItems = [];
+    let debounceTimers = {};
+
+    // Check if we're on a project page
+    function init() {
+      const path = window.location.pathname;
+      const projectMatch = path.match(/\/project\/([^/]+)/);
+      
+      if (projectMatch) {
+        currentProjectId = projectMatch[1];
+        loadProjectView(currentProjectId);
+      } else {
+        loadDashboard();
+      }
+    }
+
+    // Dashboard View
+    async function loadDashboard() {
+      document.getElementById('mainContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      
+      try {
+        const response = await fetch('/api/projects');
+        const projects = await response.json();
+        
+        renderDashboard(projects);
+      } catch (error) {
+        console.error('Error loading projects:', error);
+      }
+    }
+
+    function renderDashboard(projects) {
+      let html = `
+        <div class="dashboard">
+          <div>
+            <h2 class="section-title">📊 Your Projects</h2>
+            <div class="projects-grid">
+              <div class="new-project-card" onclick="showNewProjectModal()">
+                <div class="new-project-icon">+</div>
+                <span>Create New Project</span>
+              </div>
+      `;
+
+      for (const project of projects) {
+        html += `
+          <div class="project-card" onclick="navigateToProject('${project.id}')">
+            <h3>${escapeHtml(project.name)}</h3>
+            <div class="project-meta">
+              ${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}
+              Created: ${new Date(project.created_at).toLocaleDateString()}
+            </div>
+            <div class="project-progress" id="progress-${project.id}">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+              <div class="progress-stats">
+                <span>Loading...</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      html += `
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('mainContent').innerHTML = html;
+
+      // Load progress for each project
+      projects.forEach(async (project) => {
+        const progress = await fetch(`/api/projects/${project.id}/progress`).then(r => r.json());
+        const applicable = progress.total - progress.not_applicable;
+        const percentage = applicable > 0 ? Math.round((progress.completed / applicable) * 100) : 0;
+        
+        const progressEl = document.getElementById(`progress-${project.id}`);
+        if (progressEl) {
+          progressEl.innerHTML = `
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${percentage}%"></div>
+            </div>
+            <div class="progress-stats">
+              <span class="stat-badge stat-completed">✓ ${progress.completed}</span>
+              <span class="stat-badge stat-progress">◐ ${progress.in_progress}</span>
+              <span class="stat-badge stat-pending">○ ${progress.pending}</span>
+            </div>
+          `;
+        }
+      });
+    }
+
+    // Project View
+    async function loadProjectView(projectId) {
+      document.getElementById('mainContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      
+      try {
+        const [project, items, progress] = await Promise.all([
+          fetch(`/api/projects/${projectId}`).then(r => r.json()),
+          fetch(`/api/projects/${projectId}/checklist`).then(r => r.json()),
+          fetch(`/api/projects/${projectId}/progress`).then(r => r.json())
+        ]);
+
+        checklistItems = items;
+        renderProjectView(project, items, progress);
+        
+        // Update nav
+        document.getElementById('navActions').innerHTML = `
+          <button class="btn btn-secondary" onclick="navigateToDashboard()">
+            ← Back to Projects
+          </button>
+        `;
+      } catch (error) {
+        console.error('Error loading project:', error);
+        document.getElementById('mainContent').innerHTML = '<p>Error loading project. <a href="/">Go back</a></p>';
+      }
+    }
+
+    function renderProjectView(project, items, progress) {
+      const applicable = progress.total - progress.not_applicable;
+      const percentage = applicable > 0 ? Math.round((progress.completed / applicable) * 100) : 0;
+      const shareUrl = `${window.location.origin}/project/${project.id}`;
+
+      // Group items by phase and section
+      const grouped = {};
+      items.forEach(item => {
+        if (!grouped[item.phase]) {
+          grouped[item.phase] = {};
+        }
+        if (!grouped[item.phase][item.section]) {
+          grouped[item.phase][item.section] = [];
+        }
+        grouped[item.phase][item.section].push(item);
+      });
+
+      let html = `
+        <div class="checklist-header">
+          <div class="project-title-bar">
+            <div class="project-info">
+              <h2>${escapeHtml(project.name)}</h2>
+              <p>${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}Created by ${escapeHtml(project.created_by || 'Unknown')}</p>
+            </div>
+            <div class="share-box">
+              <span>🔗 Share Link:</span>
+              <input type="text" value="${shareUrl}" readonly id="shareLink">
+              <button class="btn-copy" onclick="copyShareLink()">Copy</button>
+            </div>
+          </div>
+
+          <div class="overall-progress">
+            <div class="progress-main">
+              <h4>Overall Progress</h4>
+              <div class="progress-bar-large">
+                <div class="progress-fill" style="width: ${percentage}%"></div>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-item">
+                <div class="stat-value completed">${progress.completed}</div>
+                <div class="stat-label">Completed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value in-progress">${progress.in_progress}</div>
+                <div class="stat-label">In Progress</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value pending">${progress.pending}</div>
+                <div class="stat-label">Pending</div>
+              </div>
+            </div>
+            <div class="progress-percentage">${percentage}%</div>
+          </div>
+        </div>
+
+        <div class="phases-container">
+      `;
+
+      const phases = Object.keys(grouped);
+      phases.forEach((phase, index) => {
+        const sections = grouped[phase];
+        const phaseItems = Object.values(sections).flat();
+        const phaseCompleted = phaseItems.filter(i => i.status === 'Completed').length;
+        const phaseApplicable = phaseItems.filter(i => i.applicability !== 'Not Applicable').length;
+        const phasePercent = phaseApplicable > 0 ? Math.round((phaseCompleted / phaseApplicable) * 100) : 0;
+
+        html += `
+          <div class="phase-section ${index === 0 ? 'expanded' : ''}" id="phase-${index}">
+            <div class="phase-header" onclick="togglePhase(${index})">
+              <div class="phase-title">
+                <span class="phase-badge">${phase}</span>
+                <span class="phase-name">${Object.keys(sections)[0]}</span>
+              </div>
+              <div class="phase-progress-mini">
+                <span>${phaseCompleted}/${phaseApplicable}</span>
+                <div class="phase-progress-bar">
+                  <div class="progress-fill" style="width: ${phasePercent}%"></div>
+                </div>
+                <span class="expand-icon">▼</span>
+              </div>
+            </div>
+            <div class="phase-content">
+        `;
+
+        Object.entries(sections).forEach(([section, sectionItems]) => {
+          html += `
+            <div class="section-group">
+              <div class="section-header">${escapeHtml(section)}</div>
+              <table class="checklist-table">
+                <thead>
+                  <tr>
+                    <th style="width: 35%">Checklist Item</th>
+                    <th style="width: 12%">Applicability</th>
+                    <th style="width: 12%">Status</th>
+                    <th style="width: 10%">Owner</th>
+                    <th style="width: 10%">Start Date</th>
+                    <th style="width: 10%">Complete Date</th>
+                    <th style="width: 11%">Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+
+          sectionItems.forEach(item => {
+            const statusClass = item.status === 'Completed' ? 'completed' : 
+                              item.status === 'In Progress' ? 'in-progress' : 
+                              item.applicability === 'Not Applicable' ? 'not-applicable' : 'pending';
+
+            html += `
+              <tr>
+                <td class="item-text">${escapeHtml(item.item_text)}</td>
+                <td>
+                  <select class="select-input ${item.applicability === 'Not Applicable' ? 'not-applicable' : ''}" 
+                          onchange="updateItem(${item.id}, 'applicability', this.value)">
+                    <option value="Applicable" ${item.applicability === 'Applicable' ? 'selected' : ''}>Applicable</option>
+                    <option value="Not Applicable" ${item.applicability === 'Not Applicable' ? 'selected' : ''}>Not Applicable</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="select-input ${statusClass}" 
+                          onchange="updateItem(${item.id}, 'status', this.value)" 
+                          id="status-${item.id}">
+                    <option value="Pending" ${item.status === 'Pending' || !item.status ? 'selected' : ''}>Pending</option>
+                    <option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" class="text-input" value="${escapeHtml(item.owner || '')}" 
+                         placeholder="Name" 
+                         onchange="updateItem(${item.id}, 'owner', this.value)">
+                </td>
+                <td>
+                  <input type="date" class="date-input" value="${item.initiate_date || ''}" 
+                         onchange="updateItem(${item.id}, 'initiate_date', this.value)">
+                </td>
+                <td>
+                  <input type="date" class="date-input" value="${item.complete_date || ''}" 
+                         onchange="updateItem(${item.id}, 'complete_date', this.value)">
+                </td>
+                <td>
+                  <input type="text" class="text-input" value="${escapeHtml(item.remarks || '')}" 
+                         placeholder="Notes" 
+                         onchange="updateItem(${item.id}, 'remarks', this.value)">
+                </td>
+              </tr>
+            `;
+          });
+
+          html += `
+                </tbody>
+              </table>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+
+      document.getElementById('mainContent').innerHTML = html;
+    }
+
+    // Update checklist item
+    async function updateItem(itemId, field, value) {
+      const item = checklistItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      item[field] = value;
+
+      // Update select styling
+      if (field === 'status') {
+        const select = document.getElementById(`status-${itemId}`);
+        select.className = 'select-input ' + (value === 'Completed' ? 'completed' : value === 'In Progress' ? 'in-progress' : 'pending');
+      }
+
+      // Debounce API calls
+      clearTimeout(debounceTimers[itemId]);
+      debounceTimers[itemId] = setTimeout(async () => {
+        try {
+          await fetch(`/api/checklist/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              applicability: item.applicability,
+              status: item.status,
+              owner: item.owner,
+              initiate_date: item.initiate_date,
+              complete_date: item.complete_date,
+              remarks: item.remarks,
+              updated_by: localStorage.getItem('userName') || 'Unknown'
+            })
+          });
+          showToast('Changes saved!');
+        } catch (error) {
+          console.error('Error updating item:', error);
+          showToast('Error saving changes');
+        }
+      }, 500);
+    }
+
+    // Toggle phase expansion
+    function togglePhase(index) {
+      const phase = document.getElementById(`phase-${index}`);
+      phase.classList.toggle('expanded');
+    }
+
+    // Modal functions
+    function showNewProjectModal() {
+      document.getElementById('newProjectModal').classList.add('active');
+      document.getElementById('projectName').focus();
+    }
+
+    function closeModal() {
+      document.getElementById('newProjectModal').classList.remove('active');
+      document.getElementById('newProjectForm').reset();
+    }
+
+    // Form submission
+    document.getElementById('newProjectForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('projectName').value.trim();
+      const customer = document.getElementById('customerName').value.trim();
+      const created_by = document.getElementById('createdBy').value.trim();
+
+      if (!name || !created_by) return;
+
+      // Save user name for future
+      localStorage.setItem('userName', created_by);
+
+      try {
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, customer, created_by })
+        });
+
+        const project = await response.json();
+        closeModal();
+        navigateToProject(project.id);
+      } catch (error) {
+        console.error('Error creating project:', error);
+      }
+    });
+
+    // Navigation
+    function navigateToProject(projectId) {
+      window.history.pushState({}, '', `/project/${projectId}`);
+      currentProjectId = projectId;
+      loadProjectView(projectId);
+    }
+
+    function navigateToDashboard() {
+      window.history.pushState({}, '', '/');
+      currentProjectId = null;
+      loadDashboard();
+      document.getElementById('navActions').innerHTML = `
+        <button class="btn btn-primary" onclick="showNewProjectModal()">
+          <span>+</span> New Project
+        </button>
+      `;
+    }
+
+    // Copy share link
+    function copyShareLink() {
+      const input = document.getElementById('shareLink');
+      input.select();
+      document.execCommand('copy');
+      showToast('Link copied to clipboard!');
+    }
+
+    // Toast notification
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', init);
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>

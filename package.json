@@ -1,0 +1,15 @@
+{
+  "name": "rmeye-checklist",
+  "version": "1.0.0",
+  "description": "RMEYE Project Checklist - Digital collaboration tool",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.2.2",
+    "uuid": "^9.0.0"
+  }
+}
