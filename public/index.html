@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --bg-primary: #0a0f1c;
@@ -27,11 +28,7 @@
       --shadow-glow: 0 0 40px rgba(34, 211, 238, 0.15);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Outfit', sans-serif;
@@ -46,7 +43,7 @@
     .header {
       background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
       border-bottom: 1px solid var(--border-color);
-      padding: 1.5rem 2rem;
+      padding: 1rem 2rem;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -54,7 +51,7 @@
     }
 
     .header-content {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -65,22 +62,23 @@
       display: flex;
       align-items: center;
       gap: 1rem;
+      cursor: pointer;
     }
 
     .logo-icon {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3);
     }
 
     .logo h1 {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       font-weight: 700;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
       -webkit-background-clip: text;
@@ -88,29 +86,22 @@
       background-clip: text;
     }
 
-    .logo-subtitle {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      font-weight: 400;
-    }
+    .logo-subtitle { font-size: 0.8rem; color: var(--text-secondary); }
 
-    .nav-actions {
-      display: flex;
-      gap: 1rem;
-    }
+    .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
 
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 10px;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
       font-family: 'Outfit', sans-serif;
       font-weight: 500;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       border: none;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
 
     .btn-primary {
@@ -130,44 +121,47 @@
       border: 1px solid var(--border-color);
     }
 
-    .btn-secondary:hover {
-      background: var(--bg-card);
-      border-color: var(--accent-cyan);
+    .btn-secondary:hover { background: var(--bg-card); border-color: var(--accent-cyan); }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--accent-red), #dc2626);
+      color: white;
+    }
+
+    .btn-export {
+      background: linear-gradient(135deg, var(--accent-green), #059669);
+      color: white;
     }
 
     .main-container {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.5rem 2rem;
     }
 
-    /* Dashboard View */
-    .dashboard {
-      display: grid;
-      gap: 2rem;
-    }
+    /* Dashboard */
+    .dashboard { display: grid; gap: 1.5rem; }
 
     .section-title {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 600;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
     }
 
     .project-card {
       background: linear-gradient(145deg, var(--bg-card), var(--bg-tertiary));
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 1.75rem;
-      cursor: pointer;
+      border-radius: 14px;
+      padding: 1.5rem;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -179,72 +173,55 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
+      height: 3px;
       background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
     }
 
     .project-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       border-color: var(--accent-cyan);
       box-shadow: var(--shadow-glow);
     }
 
-    .project-card h3 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .project-meta {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .project-progress {
-      margin-top: 1rem;
-    }
+    .project-card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .project-meta { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem; }
+    .project-progress { margin-top: 0.75rem; }
 
     .progress-bar {
-      height: 8px;
+      height: 6px;
       background: var(--bg-primary);
-      border-radius: 4px;
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
     .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
-      border-radius: 4px;
+      border-radius: 3px;
       transition: width 0.5s ease;
     }
 
-    .progress-stats {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
+    .progress-stats { display: flex; gap: 0.5rem; font-size: 0.8rem; }
 
     .stat-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
       font-weight: 500;
     }
 
     .stat-completed { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
     .stat-progress { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
     .stat-pending { background: rgba(251, 191, 36, 0.15); color: var(--accent-yellow); }
+    .stat-overdue { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
 
-    /* Project Action Buttons */
     .project-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.4rem;
       margin-top: 1rem;
       padding-top: 1rem;
       border-top: 1px solid var(--border-color);
@@ -252,76 +229,30 @@
 
     .btn-action {
       flex: 1;
-      padding: 0.5rem 0.75rem;
+      padding: 0.45rem 0.6rem;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 6px;
       background: var(--bg-tertiary);
       color: var(--text-secondary);
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-family: 'Outfit', sans-serif;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.3rem;
+      gap: 0.25rem;
     }
 
-    .btn-action:hover {
-      background: var(--bg-card);
-      color: var(--text-primary);
-    }
-
+    .btn-action:hover { background: var(--bg-card); color: var(--text-primary); }
     .btn-action.edit:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
     .btn-action.duplicate:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
     .btn-action.delete:hover { border-color: var(--accent-red); color: var(--accent-red); }
 
-    .btn-danger {
-      background: linear-gradient(135deg, var(--accent-red), #dc2626);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-    }
-
-    /* Project header actions */
-    .project-header-actions {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .btn-icon {
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      font-family: 'Outfit', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .btn-icon:hover {
-      background: var(--bg-card);
-      border-color: var(--accent-cyan);
-      color: var(--text-primary);
-    }
-
-    .btn-icon.danger:hover {
-      border-color: var(--accent-red);
-      color: var(--accent-red);
-    }
-
     .new-project-card {
       background: transparent;
       border: 2px dashed var(--border-color);
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 2rem;
       display: flex;
       flex-direction: column;
@@ -329,29 +260,21 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      min-height: 220px;
+      min-height: 200px;
     }
 
-    .new-project-card:hover {
-      border-color: var(--accent-cyan);
-      background: rgba(34, 211, 238, 0.05);
-    }
+    .new-project-card:hover { border-color: var(--accent-cyan); background: rgba(34, 211, 238, 0.05); }
 
     .new-project-icon {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .new-project-card span {
-      font-size: 1.1rem;
-      color: var(--text-secondary);
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
     }
 
     /* Modal */
@@ -361,7 +284,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
@@ -372,161 +295,183 @@
       transition: all 0.3s ease;
     }
 
-    .modal-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
 
     .modal {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 2rem;
+      border-radius: 16px;
+      padding: 1.75rem;
       width: 100%;
-      max-width: 480px;
-      transform: scale(0.9);
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
       transition: transform 0.3s ease;
     }
 
-    .modal-overlay.active .modal {
-      transform: scale(1);
-    }
+    .modal-overlay.active .modal { transform: scale(1); }
 
     .modal h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+      margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
+    .form-group { margin-bottom: 1rem; }
 
     .form-group label {
       display: block;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       font-weight: 500;
     }
 
-    .form-group input {
+    .form-group input, .form-group textarea {
       width: 100%;
-      padding: 0.85rem 1rem;
+      padding: 0.7rem 0.9rem;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 8px;
       color: var(--text-primary);
       font-family: 'Outfit', sans-serif;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
     }
 
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--accent-cyan);
-    }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-cyan); }
 
-    .modal-actions {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+    .modal-actions .btn { flex: 1; }
 
-    .modal-actions .btn {
-      flex: 1;
-    }
-
-    /* Checklist View */
-    .checklist-header {
-      margin-bottom: 2rem;
-    }
+    /* Project View */
+    .project-header { margin-bottom: 1.5rem; }
 
     .project-title-bar {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1.5rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
     }
 
-    .project-info h2 {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
+    .project-info h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .project-info p { color: var(--text-secondary); font-size: 0.9rem; }
 
-    .project-info p {
+    .project-header-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+
+    .btn-icon {
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
       color: var(--text-secondary);
-      font-size: 1rem;
+      font-size: 0.8rem;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
     }
+
+    .btn-icon:hover { background: var(--bg-card); border-color: var(--accent-cyan); color: var(--text-primary); }
+    .btn-icon.danger:hover { border-color: var(--accent-red); color: var(--accent-red); }
 
     .share-box {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
+      font-size: 0.85rem;
     }
 
     .share-box input {
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
       color: var(--text-primary);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      width: 280px;
+      font-size: 0.8rem;
+      width: 250px;
     }
 
     .btn-copy {
-      padding: 0.6rem 1rem;
+      padding: 0.5rem 0.9rem;
       background: var(--accent-cyan);
       color: var(--bg-primary);
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s ease;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
     }
 
-    .btn-copy:hover {
-      background: var(--accent-blue);
+    .btn-copy:hover { background: var(--accent-blue); }
+
+    /* Tabs */
+    .tabs-container { margin-bottom: 1.5rem; }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0;
     }
 
-    .overall-progress {
-      background: linear-gradient(135deg, var(--bg-card), var(--bg-tertiary));
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 1.5rem 2rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      align-items: center;
-    }
-
-    .progress-main {
-      flex: 1;
-    }
-
-    .progress-main h4 {
-      font-size: 1rem;
+    .tab {
+      padding: 0.75rem 1.25rem;
+      background: transparent;
+      border: none;
       color: var(--text-secondary);
-      margin-bottom: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s ease;
     }
 
-    .progress-bar-large {
-      height: 12px;
-      background: var(--bg-primary);
-      border-radius: 6px;
-      overflow: hidden;
+    .tab:hover { color: var(--text-primary); }
+    .tab.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Analytics Dashboard */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
-    .progress-percentage {
+    .analytics-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .analytics-card h4 {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .stat-big {
       font-size: 2.5rem;
       font-weight: 700;
       background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
@@ -535,221 +480,260 @@
       background-clip: text;
     }
 
-    .stats-row {
-      display: flex;
-      gap: 2rem;
-    }
-
-    .stat-item {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
       text-align: center;
     }
 
-    .stat-value {
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
+    .stat-item-small { text-align: center; }
+    .stat-item-small .value { font-size: 1.5rem; font-weight: 700; }
+    .stat-item-small .label { font-size: 0.75rem; color: var(--text-muted); }
+    .stat-item-small .value.green { color: var(--accent-green); }
+    .stat-item-small .value.blue { color: var(--accent-blue); }
+    .stat-item-small .value.yellow { color: var(--accent-yellow); }
+    .stat-item-small .value.red { color: var(--accent-red); }
 
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+    .chart-container { height: 200px; position: relative; }
 
-    .stat-value.completed { color: var(--accent-green); }
-    .stat-value.in-progress { color: var(--accent-blue); }
-    .stat-value.pending { color: var(--accent-yellow); }
-
-    /* Phase Sections */
-    .phases-container {
+    /* Overall Progress Bar */
+    .overall-progress {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-tertiary));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
       display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin-top: 2rem;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
     }
+
+    .progress-main { flex: 1; }
+    .progress-main h4 { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+
+    .progress-bar-large {
+      height: 10px;
+      background: var(--bg-primary);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-percentage {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Phases */
+    .phases-container { display: flex; flex-direction: column; gap: 1rem; }
 
     .phase-section {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
     }
 
     .phase-header {
       background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-card));
-      padding: 1.25rem 1.5rem;
+      padding: 1rem 1.25rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.2s ease;
     }
 
-    .phase-header:hover {
-      background: var(--bg-card);
-    }
+    .phase-header:hover { background: var(--bg-card); }
 
-    .phase-title {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    .phase-title { display: flex; align-items: center; gap: 0.75rem; }
 
     .phase-badge {
-      padding: 0.4rem 0.8rem;
+      padding: 0.3rem 0.6rem;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      border-radius: 8px;
+      border-radius: 6px;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--bg-primary);
     }
 
-    .phase-name {
-      font-size: 1.15rem;
-      font-weight: 600;
-    }
+    .phase-name { font-size: 1rem; font-weight: 600; }
 
-    .phase-progress-mini {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    .phase-progress-mini { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
 
     .phase-progress-bar {
-      width: 150px;
-      height: 6px;
+      width: 120px;
+      height: 5px;
       background: var(--bg-primary);
       border-radius: 3px;
       overflow: hidden;
     }
 
-    .expand-icon {
-      color: var(--text-secondary);
-      transition: transform 0.3s ease;
-    }
+    .expand-icon { color: var(--text-secondary); transition: transform 0.3s ease; }
+    .phase-section.expanded .expand-icon { transform: rotate(180deg); }
 
-    .phase-section.expanded .expand-icon {
-      transform: rotate(180deg);
-    }
+    .phase-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+    .phase-section.expanded .phase-content { max-height: 10000px; }
 
-    .phase-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-    }
-
-    .phase-section.expanded .phase-content {
-      max-height: 5000px;
-    }
-
-    .section-group {
-      border-top: 1px solid var(--border-color);
-    }
+    .section-group { border-top: 1px solid var(--border-color); }
 
     .section-header {
       background: rgba(34, 211, 238, 0.05);
-      padding: 1rem 1.5rem;
+      padding: 0.75rem 1.25rem;
       font-weight: 600;
       color: var(--accent-cyan);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
-    .checklist-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    .checklist-table { width: 100%; border-collapse: collapse; }
 
     .checklist-table th {
       text-align: left;
-      padding: 1rem 1.5rem;
+      padding: 0.75rem 1rem;
       background: var(--bg-tertiary);
       color: var(--text-secondary);
       font-weight: 500;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .checklist-table td {
-      padding: 1rem 1.5rem;
+      padding: 0.75rem 1rem;
       border-top: 1px solid var(--border-color);
       vertical-align: middle;
+      font-size: 0.9rem;
     }
 
-    .checklist-table tr:hover {
-      background: rgba(34, 211, 238, 0.03);
-    }
+    .checklist-table tr:hover { background: rgba(34, 211, 238, 0.02); }
+    .checklist-table tr.overdue { background: rgba(239, 68, 68, 0.05); }
 
-    .item-text {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      max-width: 400px;
-    }
+    .item-text { line-height: 1.4; max-width: 350px; }
 
-    .select-input {
-      padding: 0.5rem 0.75rem;
+    .select-input, .text-input, .date-input {
+      padding: 0.4rem 0.6rem;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 6px;
       color: var(--text-primary);
       font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      cursor: pointer;
-      min-width: 130px;
+      font-size: 0.85rem;
     }
 
-    .select-input:focus {
-      outline: none;
-      border-color: var(--accent-cyan);
-    }
+    .select-input { cursor: pointer; min-width: 110px; }
+    .text-input { width: 100%; min-width: 80px; }
+    .date-input { width: 130px; }
+
+    .select-input:focus, .text-input:focus, .date-input:focus { outline: none; border-color: var(--accent-cyan); }
 
     .select-input.completed { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1); }
     .select-input.in-progress { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); }
     .select-input.pending { border-color: var(--accent-yellow); background: rgba(251, 191, 36, 0.1); }
     .select-input.not-applicable { border-color: var(--text-muted); background: rgba(100, 116, 139, 0.1); color: var(--text-muted); }
 
-    .text-input {
-      padding: 0.5rem 0.75rem;
-      background: var(--bg-primary);
+    .overdue-badge {
+      display: inline-block;
+      padding: 0.15rem 0.4rem;
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .comment-btn {
+      background: none;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      width: 100%;
-      min-width: 100px;
+      border-radius: 5px;
+      padding: 0.3rem 0.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
     }
 
-    .text-input:focus {
-      outline: none;
-      border-color: var(--accent-cyan);
+    .comment-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+    .comment-btn.has-comments { border-color: var(--accent-purple); color: var(--accent-purple); }
+
+    /* Activity Log */
+    .activity-list { max-height: 400px; overflow-y: auto; }
+
+    .activity-item {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .date-input {
-      padding: 0.5rem 0.75rem;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
-    }
-
-    .date-input:focus {
-      outline: none;
-      border-color: var(--accent-cyan);
-    }
-
-    /* Toast notifications */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--bg-card);
-      border: 1px solid var(--accent-green);
-      border-radius: 12px;
-      padding: 1rem 1.5rem;
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .activity-icon.status { background: rgba(16, 185, 129, 0.2); }
+    .activity-icon.comment { background: rgba(168, 85, 247, 0.2); }
+
+    .activity-content { flex: 1; }
+    .activity-content strong { color: var(--text-primary); }
+    .activity-content p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.2rem; }
+    .activity-time { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Comments Panel */
+    .comments-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .comments-list { max-height: 300px; overflow-y: auto; margin-bottom: 1rem; }
+
+    .comment-item {
+      padding: 0.75rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .comment-author { font-weight: 600; font-size: 0.85rem; color: var(--accent-cyan); }
+    .comment-time { font-size: 0.75rem; color: var(--text-muted); }
+    .comment-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4; }
+
+    .comment-form { display: flex; gap: 0.5rem; }
+    .comment-form input { flex: 1; }
+    .comment-form button { padding: 0.5rem 1rem; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--accent-green);
+      border-radius: 10px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
       transform: translateY(100px);
       opacity: 0;
@@ -757,74 +741,42 @@
       z-index: 2000;
     }
 
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .toast-icon {
-      color: var(--accent-green);
-      font-size: 1.25rem;
-    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { color: var(--accent-green); font-size: 1.1rem; }
 
     /* Loading */
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 300px;
-      color: var(--text-secondary);
-    }
+    .loading { display: flex; align-items: center; justify-content: center; height: 300px; }
 
     .spinner {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border: 3px solid var(--border-color);
       border-top-color: var(--accent-cyan);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Print Styles */
+    @media print {
+      body { background: white !important; color: black !important; }
+      .header, .nav-actions, .project-actions, .btn-action, .btn-icon, .tabs, .comment-btn { display: none !important; }
+      .modal-overlay { display: none !important; }
+      .phase-section { break-inside: avoid; }
+      .phase-content { max-height: none !important; }
     }
 
     /* Responsive */
     @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .project-title-bar {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .share-box {
-        flex-direction: column;
-      }
-
-      .share-box input {
-        width: 100%;
-      }
-
-      .overall-progress {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-row {
-        justify-content: space-around;
-      }
-
-      .checklist-table {
-        display: block;
-        overflow-x: auto;
-      }
+      .header-content { flex-direction: column; gap: 0.75rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-title-bar { flex-direction: column; }
+      .share-box { flex-direction: column; width: 100%; }
+      .share-box input { width: 100%; }
+      .analytics-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .checklist-table { display: block; overflow-x: auto; }
     }
   </style>
 </head>
@@ -832,7 +784,7 @@
 
   <header class="header">
     <div class="header-content">
-      <div class="logo">
+      <div class="logo" onclick="navigateToDashboard()">
         <div class="logo-icon">📋</div>
         <div>
           <h1>RMEYE Checklist</h1>
@@ -840,15 +792,13 @@
         </div>
       </div>
       <nav class="nav-actions" id="navActions">
-        <button class="btn btn-primary" onclick="showNewProjectModal()">
-          <span>+</span> New Project
-        </button>
+        <button class="btn btn-primary" onclick="showNewProjectModal()">+ New Project</button>
       </nav>
     </div>
   </header>
 
   <main class="main-container" id="mainContent">
-    <!-- Content loaded dynamically -->
+    <div class="loading"><div class="spinner"></div></div>
   </main>
 
   <!-- New Project Modal -->
@@ -857,19 +807,19 @@
       <h2>📁 Create New Project</h2>
       <form id="newProjectForm">
         <div class="form-group">
-          <label for="projectName">Project Name *</label>
+          <label>Project Name *</label>
           <input type="text" id="projectName" placeholder="e.g., HQ Transformer Monitoring" required>
         </div>
         <div class="form-group">
-          <label for="customerName">Customer Name</label>
+          <label>Customer Name</label>
           <input type="text" id="customerName" placeholder="e.g., Hydro Quebec">
         </div>
         <div class="form-group">
-          <label for="createdBy">Your Name *</label>
+          <label>Your Name *</label>
           <input type="text" id="createdBy" placeholder="e.g., John Doe" required>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('newProjectModal')">Cancel</button>
           <button type="submit" class="btn btn-primary">Create Project</button>
         </div>
       </form>
@@ -883,15 +833,15 @@
       <form id="editProjectForm">
         <input type="hidden" id="editProjectId">
         <div class="form-group">
-          <label for="editProjectName">Project Name *</label>
-          <input type="text" id="editProjectName" placeholder="Project Name" required>
+          <label>Project Name *</label>
+          <input type="text" id="editProjectName" required>
         </div>
         <div class="form-group">
-          <label for="editCustomerName">Customer Name</label>
-          <input type="text" id="editCustomerName" placeholder="Customer Name">
+          <label>Customer Name</label>
+          <input type="text" id="editCustomerName">
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editProjectModal')">Cancel</button>
           <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </form>
@@ -902,14 +852,31 @@
   <div class="modal-overlay" id="deleteConfirmModal">
     <div class="modal">
       <h2>🗑️ Delete Project</h2>
-      <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+      <p style="color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
         Are you sure you want to delete <strong id="deleteProjectName" style="color: var(--accent-red);"></strong>?<br>
-        This action cannot be undone. All checklist data will be permanently lost.
+        This action cannot be undone.
       </p>
       <input type="hidden" id="deleteProjectId">
       <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('deleteConfirmModal')">Cancel</button>
         <button type="button" class="btn btn-danger" onclick="confirmDeleteProject()">Delete Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comment Modal -->
+  <div class="modal-overlay" id="commentModal">
+    <div class="modal">
+      <h2>💬 Comments</h2>
+      <p id="commentItemText" style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px;"></p>
+      <input type="hidden" id="commentItemId">
+      <div class="comments-list" id="commentsList"></div>
+      <div class="comment-form">
+        <input type="text" id="newCommentText" placeholder="Add a comment...">
+        <button class="btn btn-primary" onclick="addComment()">Send</button>
+      </div>
+      <div class="modal-actions" style="margin-top: 1rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('commentModal')">Close</button>
       </div>
     </div>
   </div>
@@ -917,15 +884,21 @@
   <!-- Toast -->
   <div class="toast" id="toast">
     <span class="toast-icon">✓</span>
-    <span id="toastMessage">Saved successfully!</span>
+    <span id="toastMessage">Saved!</span>
   </div>
 
   <script>
     let currentProjectId = null;
     let checklistItems = [];
+    let projectData = null;
+    let analyticsData = null;
+    let activityData = [];
+    let commentsData = {};
     let debounceTimers = {};
+    let phaseChart = null;
+    let ownerChart = null;
 
-    // Check if we're on a project page
+    // Initialize
     function init() {
       const path = window.location.pathname;
       const projectMatch = path.match(/\/project\/([^/]+)/);
@@ -938,89 +911,68 @@
       }
     }
 
-    // Dashboard View
+    // Dashboard
     async function loadDashboard() {
       document.getElementById('mainContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      document.getElementById('navActions').innerHTML = '<button class="btn btn-primary" onclick="showNewProjectModal()">+ New Project</button>';
       
       try {
-        const response = await fetch('/api/projects');
-        const projects = await response.json();
-        
+        const projects = await fetch('/api/projects').then(r => r.json());
         renderDashboard(projects);
       } catch (error) {
-        console.error('Error loading projects:', error);
+        console.error('Error:', error);
+        document.getElementById('mainContent').innerHTML = '<p>Error loading projects</p>';
       }
     }
 
     function renderDashboard(projects) {
       let html = `
         <div class="dashboard">
-          <div>
-            <h2 class="section-title">📊 Your Projects</h2>
-            <div class="projects-grid">
-              <div class="new-project-card" onclick="showNewProjectModal()">
-                <div class="new-project-icon">+</div>
-                <span>Create New Project</span>
-              </div>
+          <h2 class="section-title">📊 Your Projects</h2>
+          <div class="projects-grid">
+            <div class="new-project-card" onclick="showNewProjectModal()">
+              <div class="new-project-icon">+</div>
+              <span style="color: var(--text-secondary);">Create New Project</span>
+            </div>
       `;
 
-      for (const project of projects) {
+      for (const p of projects) {
         html += `
           <div class="project-card">
-            <div onclick="navigateToProject('${project.id}')" style="cursor: pointer;">
-              <h3>${escapeHtml(project.name)}</h3>
-              <div class="project-meta">
-                ${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}
-                Created: ${new Date(project.created_at).toLocaleDateString()}
-              </div>
-              <div class="project-progress" id="progress-${project.id}">
-                <div class="progress-bar">
-                  <div class="progress-fill" style="width: 0%"></div>
-                </div>
-                <div class="progress-stats">
-                  <span>Loading...</span>
-                </div>
+            <div onclick="navigateToProject('${p.id}')" style="cursor: pointer;">
+              <h3>${esc(p.name)}</h3>
+              <div class="project-meta">${p.customer ? `${esc(p.customer)} • ` : ''}${new Date(p.created_at).toLocaleDateString()}</div>
+              <div class="project-progress" id="prog-${p.id}">
+                <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+                <div class="progress-stats"><span>Loading...</span></div>
               </div>
             </div>
             <div class="project-actions">
-              <button class="btn-action edit" onclick="event.stopPropagation(); showEditModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}', '${escapeHtml(project.customer || '').replace(/'/g, "\\'")}')">
-                ✏️ Edit
-              </button>
-              <button class="btn-action duplicate" onclick="event.stopPropagation(); duplicateProject('${project.id}')">
-                📋 Duplicate
-              </button>
-              <button class="btn-action delete" onclick="event.stopPropagation(); showDeleteModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}')">
-                🗑️ Delete
-              </button>
+              <button class="btn-action edit" onclick="event.stopPropagation(); showEditModal('${p.id}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.customer || '').replace(/'/g, "\\'")}')">✏️ Edit</button>
+              <button class="btn-action duplicate" onclick="event.stopPropagation(); duplicateProject('${p.id}')">📋 Copy</button>
+              <button class="btn-action delete" onclick="event.stopPropagation(); showDeleteModal('${p.id}', '${esc(p.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
             </div>
           </div>
         `;
       }
 
-      html += `
-            </div>
-          </div>
-        </div>
-      `;
-
+      html += '</div></div>';
       document.getElementById('mainContent').innerHTML = html;
 
-      // Load progress for each project
-      projects.forEach(async (project) => {
-        const progress = await fetch(`/api/projects/${project.id}/progress`).then(r => r.json());
-        const applicable = progress.total - progress.not_applicable;
-        const percentage = applicable > 0 ? Math.round((progress.completed / applicable) * 100) : 0;
+      // Load progress
+      projects.forEach(async (p) => {
+        const prog = await fetch(`/api/projects/${p.id}/progress`).then(r => r.json());
+        const applicable = prog.total - prog.not_applicable;
+        const pct = applicable > 0 ? Math.round((prog.completed / applicable) * 100) : 0;
         
-        const progressEl = document.getElementById(`progress-${project.id}`);
-        if (progressEl) {
-          progressEl.innerHTML = `
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${percentage}%"></div>
-            </div>
+        const el = document.getElementById(`prog-${p.id}`);
+        if (el) {
+          el.innerHTML = `
+            <div class="progress-bar"><div class="progress-fill" style="width: ${pct}%"></div></div>
             <div class="progress-stats">
-              <span class="stat-badge stat-completed">✓ ${progress.completed}</span>
-              <span class="stat-badge stat-progress">◐ ${progress.in_progress}</span>
-              <span class="stat-badge stat-pending">○ ${progress.pending}</span>
+              <span class="stat-badge stat-completed">✓ ${prog.completed}</span>
+              <span class="stat-badge stat-progress">◐ ${prog.in_progress}</span>
+              <span class="stat-badge stat-pending">○ ${prog.pending}</span>
             </div>
           `;
         }
@@ -1032,117 +984,118 @@
       document.getElementById('mainContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       
       try {
-        const [project, items, progress] = await Promise.all([
+        const [project, items, progress, analytics, activity, comments] = await Promise.all([
           fetch(`/api/projects/${projectId}`).then(r => r.json()),
           fetch(`/api/projects/${projectId}/checklist`).then(r => r.json()),
-          fetch(`/api/projects/${projectId}/progress`).then(r => r.json())
+          fetch(`/api/projects/${projectId}/progress`).then(r => r.json()),
+          fetch(`/api/projects/${projectId}/analytics`).then(r => r.json()),
+          fetch(`/api/projects/${projectId}/activity`).then(r => r.json()),
+          fetch(`/api/projects/${projectId}/comments`).then(r => r.json())
         ]);
 
+        projectData = project;
         checklistItems = items;
-        renderProjectView(project, items, progress);
+        analyticsData = analytics;
+        activityData = activity;
         
-        // Update nav
+        // Group comments by item
+        commentsData = {};
+        comments.forEach(c => {
+          if (!commentsData[c.item_id]) commentsData[c.item_id] = [];
+          commentsData[c.item_id].push(c);
+        });
+
+        renderProjectView(project, items, progress, analytics, activity);
+        
         document.getElementById('navActions').innerHTML = `
-          <button class="btn btn-secondary" onclick="navigateToDashboard()">
-            ← Back to Projects
-          </button>
+          <button class="btn btn-export" onclick="exportPDF()">📄 Export PDF</button>
+          <button class="btn btn-secondary" onclick="navigateToDashboard()">← Back</button>
         `;
       } catch (error) {
-        console.error('Error loading project:', error);
+        console.error('Error:', error);
         document.getElementById('mainContent').innerHTML = '<p>Error loading project. <a href="/">Go back</a></p>';
       }
     }
 
-    function renderProjectView(project, items, progress) {
+    function renderProjectView(project, items, progress, analytics, activity) {
       const applicable = progress.total - progress.not_applicable;
-      const percentage = applicable > 0 ? Math.round((progress.completed / applicable) * 100) : 0;
-      const shareUrl = `${window.location.origin}/project/${project.id}`;
-
-      // Group items by phase and section
-      const grouped = {};
-      items.forEach(item => {
-        if (!grouped[item.phase]) {
-          grouped[item.phase] = {};
-        }
-        if (!grouped[item.phase][item.section]) {
-          grouped[item.phase][item.section] = [];
-        }
-        grouped[item.phase][item.section].push(item);
-      });
+      const pct = applicable > 0 ? Math.round((progress.completed / applicable) * 100) : 0;
+      const shareUrl = `${location.origin}/project/${project.id}`;
+      const overdueCount = analytics.overdueItems?.length || 0;
 
       let html = `
-        <div class="checklist-header">
+        <div class="project-header">
           <div class="project-title-bar">
             <div class="project-info">
-              <h2>${escapeHtml(project.name)}</h2>
-              <p>${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}Created by ${escapeHtml(project.created_by || 'Unknown')}</p>
+              <h2>${esc(project.name)}</h2>
+              <p>${project.customer ? `${esc(project.customer)} • ` : ''}Created by ${esc(project.created_by || 'Unknown')}</p>
               <div class="project-header-actions">
-                <button class="btn-icon" onclick="showEditModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}', '${escapeHtml(project.customer || '').replace(/'/g, "\\'")}')">
-                  ✏️ Edit Project
-                </button>
-                <button class="btn-icon" onclick="duplicateProject('${project.id}')">
-                  📋 Duplicate
-                </button>
-                <button class="btn-icon danger" onclick="showDeleteModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}')">
-                  🗑️ Delete
-                </button>
+                <button class="btn-icon" onclick="showEditModal('${project.id}', '${esc(project.name).replace(/'/g, "\\'")}', '${esc(project.customer || '').replace(/'/g, "\\'")}')">✏️ Edit</button>
+                <button class="btn-icon" onclick="duplicateProject('${project.id}')">📋 Duplicate</button>
+                <button class="btn-icon danger" onclick="showDeleteModal('${project.id}', '${esc(project.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
               </div>
             </div>
             <div class="share-box">
-              <span>🔗 Share Link:</span>
+              <span>🔗</span>
               <input type="text" value="${shareUrl}" readonly id="shareLink">
-              <button class="btn-copy" onclick="copyShareLink()">Copy</button>
+              <button class="btn-copy" onclick="copyLink()">Copy</button>
             </div>
-          </div>
-
-          <div class="overall-progress">
-            <div class="progress-main">
-              <h4>Overall Progress</h4>
-              <div class="progress-bar-large">
-                <div class="progress-fill" style="width: ${percentage}%"></div>
-              </div>
-            </div>
-            <div class="stats-row">
-              <div class="stat-item">
-                <div class="stat-value completed">${progress.completed}</div>
-                <div class="stat-label">Completed</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value in-progress">${progress.in_progress}</div>
-                <div class="stat-label">In Progress</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value pending">${progress.pending}</div>
-                <div class="stat-label">Pending</div>
-              </div>
-            </div>
-            <div class="progress-percentage">${percentage}%</div>
           </div>
         </div>
 
-        <div class="phases-container">
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('checklist')">📋 Checklist</button>
+            <button class="tab" onclick="switchTab('analytics')">📊 Analytics</button>
+            <button class="tab" onclick="switchTab('activity')">📜 Activity Log</button>
+          </div>
+        </div>
+
+        <!-- Checklist Tab -->
+        <div class="tab-content active" id="tab-checklist">
+          <div class="overall-progress">
+            <div class="progress-main">
+              <h4>Overall Progress</h4>
+              <div class="progress-bar-large"><div class="progress-fill" style="width: ${pct}%"></div></div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-item-small"><div class="value green">${progress.completed}</div><div class="label">Completed</div></div>
+              <div class="stat-item-small"><div class="value blue">${progress.in_progress}</div><div class="label">In Progress</div></div>
+              <div class="stat-item-small"><div class="value yellow">${progress.pending}</div><div class="label">Pending</div></div>
+              <div class="stat-item-small"><div class="value red">${overdueCount}</div><div class="label">Overdue</div></div>
+            </div>
+            <div class="progress-percentage">${pct}%</div>
+          </div>
+
+          <div class="phases-container">
       `;
 
+      // Group items
+      const grouped = {};
+      items.forEach(item => {
+        if (!grouped[item.phase]) grouped[item.phase] = {};
+        if (!grouped[item.phase][item.section]) grouped[item.phase][item.section] = [];
+        grouped[item.phase][item.section].push(item);
+      });
+
       const phases = Object.keys(grouped);
-      phases.forEach((phase, index) => {
+      phases.forEach((phase, idx) => {
         const sections = grouped[phase];
         const phaseItems = Object.values(sections).flat();
         const phaseCompleted = phaseItems.filter(i => i.status === 'Completed').length;
         const phaseApplicable = phaseItems.filter(i => i.applicability !== 'Not Applicable').length;
-        const phasePercent = phaseApplicable > 0 ? Math.round((phaseCompleted / phaseApplicable) * 100) : 0;
+        const phasePct = phaseApplicable > 0 ? Math.round((phaseCompleted / phaseApplicable) * 100) : 0;
 
         html += `
-          <div class="phase-section ${index === 0 ? 'expanded' : ''}" id="phase-${index}">
-            <div class="phase-header" onclick="togglePhase(${index})">
+          <div class="phase-section ${idx === 0 ? 'expanded' : ''}" id="phase-${idx}">
+            <div class="phase-header" onclick="togglePhase(${idx})">
               <div class="phase-title">
                 <span class="phase-badge">${phase}</span>
                 <span class="phase-name">${Object.keys(sections)[0]}</span>
               </div>
               <div class="phase-progress-mini">
                 <span>${phaseCompleted}/${phaseApplicable}</span>
-                <div class="phase-progress-bar">
-                  <div class="progress-fill" style="width: ${phasePercent}%"></div>
-                </div>
+                <div class="phase-progress-bar"><div class="progress-fill" style="width: ${phasePct}%"></div></div>
                 <span class="expand-icon">▼</span>
               </div>
             </div>
@@ -1152,100 +1105,203 @@
         Object.entries(sections).forEach(([section, sectionItems]) => {
           html += `
             <div class="section-group">
-              <div class="section-header">${escapeHtml(section)}</div>
+              <div class="section-header">${esc(section)}</div>
               <table class="checklist-table">
                 <thead>
                   <tr>
-                    <th style="width: 35%">Checklist Item</th>
-                    <th style="width: 12%">Applicability</th>
-                    <th style="width: 12%">Status</th>
-                    <th style="width: 10%">Owner</th>
-                    <th style="width: 10%">Start Date</th>
-                    <th style="width: 10%">Complete Date</th>
-                    <th style="width: 11%">Remarks</th>
+                    <th style="width:30%">Item</th>
+                    <th style="width:10%">Applicable</th>
+                    <th style="width:10%">Status</th>
+                    <th style="width:10%">Owner</th>
+                    <th style="width:10%">Due Date</th>
+                    <th style="width:10%">Complete</th>
+                    <th style="width:15%">Remarks</th>
+                    <th style="width:5%"></th>
                   </tr>
                 </thead>
                 <tbody>
           `;
 
           sectionItems.forEach(item => {
-            const statusClass = item.status === 'Completed' ? 'completed' : 
-                              item.status === 'In Progress' ? 'in-progress' : 
-                              item.applicability === 'Not Applicable' ? 'not-applicable' : 'pending';
+            const isOverdue = item.due_date && new Date(item.due_date) < new Date() && item.status !== 'Completed';
+            const statusClass = item.status === 'Completed' ? 'completed' : item.status === 'In Progress' ? 'in-progress' : item.applicability === 'Not Applicable' ? 'not-applicable' : 'pending';
+            const commentCount = commentsData[item.id]?.length || 0;
 
             html += `
-              <tr>
-                <td class="item-text">${escapeHtml(item.item_text)}</td>
+              <tr class="${isOverdue ? 'overdue' : ''}">
+                <td class="item-text">${esc(item.item_text)}${isOverdue ? '<span class="overdue-badge">OVERDUE</span>' : ''}</td>
                 <td>
-                  <select class="select-input ${item.applicability === 'Not Applicable' ? 'not-applicable' : ''}" 
-                          onchange="updateItem(${item.id}, 'applicability', this.value)">
+                  <select class="select-input ${item.applicability === 'Not Applicable' ? 'not-applicable' : ''}" onchange="updateItem(${item.id}, 'applicability', this.value)">
                     <option value="Applicable" ${item.applicability === 'Applicable' ? 'selected' : ''}>Applicable</option>
-                    <option value="Not Applicable" ${item.applicability === 'Not Applicable' ? 'selected' : ''}>Not Applicable</option>
+                    <option value="Not Applicable" ${item.applicability === 'Not Applicable' ? 'selected' : ''}>N/A</option>
                   </select>
                 </td>
                 <td>
-                  <select class="select-input ${statusClass}" 
-                          onchange="updateItem(${item.id}, 'status', this.value)" 
-                          id="status-${item.id}">
-                    <option value="Pending" ${item.status === 'Pending' || !item.status ? 'selected' : ''}>Pending</option>
+                  <select class="select-input ${statusClass}" onchange="updateItem(${item.id}, 'status', this.value)" id="status-${item.id}">
+                    <option value="Pending" ${!item.status || item.status === 'Pending' ? 'selected' : ''}>Pending</option>
                     <option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                     <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
                   </select>
                 </td>
-                <td>
-                  <input type="text" class="text-input" value="${escapeHtml(item.owner || '')}" 
-                         placeholder="Name" 
-                         onchange="updateItem(${item.id}, 'owner', this.value)">
-                </td>
-                <td>
-                  <input type="date" class="date-input" value="${item.initiate_date || ''}" 
-                         onchange="updateItem(${item.id}, 'initiate_date', this.value)">
-                </td>
-                <td>
-                  <input type="date" class="date-input" value="${item.complete_date || ''}" 
-                         onchange="updateItem(${item.id}, 'complete_date', this.value)">
-                </td>
-                <td>
-                  <input type="text" class="text-input" value="${escapeHtml(item.remarks || '')}" 
-                         placeholder="Notes" 
-                         onchange="updateItem(${item.id}, 'remarks', this.value)">
-                </td>
+                <td><input type="text" class="text-input" value="${esc(item.owner || '')}" placeholder="Name" onchange="updateItem(${item.id}, 'owner', this.value)"></td>
+                <td><input type="date" class="date-input" value="${item.due_date || ''}" onchange="updateItem(${item.id}, 'due_date', this.value)"></td>
+                <td><input type="date" class="date-input" value="${item.complete_date || ''}" onchange="updateItem(${item.id}, 'complete_date', this.value)"></td>
+                <td><input type="text" class="text-input" value="${esc(item.remarks || '')}" placeholder="Notes" onchange="updateItem(${item.id}, 'remarks', this.value)"></td>
+                <td><button class="comment-btn ${commentCount > 0 ? 'has-comments' : ''}" onclick="openComments(${item.id}, '${esc(item.item_text).replace(/'/g, "\\'")}')">💬 ${commentCount || ''}</button></td>
               </tr>
             `;
           });
 
+          html += '</tbody></table></div>';
+        });
+
+        html += '</div></div>';
+      });
+
+      html += '</div></div>';
+
+      // Analytics Tab
+      html += `
+        <div class="tab-content" id="tab-analytics">
+          <div class="analytics-grid">
+            <div class="analytics-card">
+              <h4>📈 Phase Progress</h4>
+              <div class="chart-container"><canvas id="phaseChart"></canvas></div>
+            </div>
+            <div class="analytics-card">
+              <h4>👥 By Owner</h4>
+              <div class="chart-container"><canvas id="ownerChart"></canvas></div>
+            </div>
+            <div class="analytics-card">
+              <h4>⚠️ Overdue Items (${overdueCount})</h4>
+              <div style="max-height: 200px; overflow-y: auto;">
+      `;
+
+      if (analytics.overdueItems?.length > 0) {
+        analytics.overdueItems.forEach(item => {
+          html += `<div style="padding: 0.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.85rem;">
+            <strong>${esc(item.item_text.substring(0, 50))}...</strong>
+            <br><span style="color: var(--accent-red);">Due: ${item.due_date}</span> | Owner: ${esc(item.owner || 'Unassigned')}
+          </div>`;
+        });
+      } else {
+        html += '<p style="color: var(--text-muted); font-size: 0.9rem;">No overdue items! 🎉</p>';
+      }
+
+      html += '</div></div></div></div>';
+
+      // Activity Tab
+      html += `
+        <div class="tab-content" id="tab-activity">
+          <div class="analytics-card">
+            <h4>📜 Recent Activity</h4>
+            <div class="activity-list">
+      `;
+
+      if (activity.length > 0) {
+        activity.forEach(a => {
+          const icon = a.action === 'comment_added' ? '💬' : '✅';
+          const iconClass = a.action === 'comment_added' ? 'comment' : 'status';
+          const desc = a.action === 'status_change' 
+            ? `changed status from <strong>${a.old_value}</strong> to <strong>${a.new_value}</strong>` 
+            : 'added a comment';
+          
           html += `
-                </tbody>
-              </table>
+            <div class="activity-item">
+              <div class="activity-icon ${iconClass}">${icon}</div>
+              <div class="activity-content">
+                <strong>${esc(a.user_name)}</strong> ${desc}
+                <p>${esc(a.item_text?.substring(0, 60) || '')}...</p>
+              </div>
+              <div class="activity-time">${timeAgo(a.created_at)}</div>
             </div>
           `;
         });
+      } else {
+        html += '<p style="color: var(--text-muted); padding: 1rem;">No activity yet</p>';
+      }
 
-        html += `
-            </div>
-          </div>
-        `;
-      });
-
-      html += `</div>`;
+      html += '</div></div></div>';
 
       document.getElementById('mainContent').innerHTML = html;
+
+      // Render charts after DOM is ready
+      setTimeout(() => renderCharts(analytics), 100);
     }
 
-    // Update checklist item
+    function renderCharts(analytics) {
+      // Phase Chart
+      const phaseCtx = document.getElementById('phaseChart');
+      if (phaseCtx && analytics.phaseStats) {
+        if (phaseChart) phaseChart.destroy();
+        phaseChart = new Chart(phaseCtx, {
+          type: 'bar',
+          data: {
+            labels: analytics.phaseStats.map(p => p.phase),
+            datasets: [{
+              label: 'Completed',
+              data: analytics.phaseStats.map(p => p.completed),
+              backgroundColor: '#10b981'
+            }, {
+              label: 'Remaining',
+              data: analytics.phaseStats.map(p => p.total - p.completed - p.not_applicable),
+              backgroundColor: '#3b82f6'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { x: { stacked: true }, y: { stacked: true } },
+            plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+          }
+        });
+      }
+
+      // Owner Chart
+      const ownerCtx = document.getElementById('ownerChart');
+      if (ownerCtx && analytics.ownerStats) {
+        if (ownerChart) ownerChart.destroy();
+        ownerChart = new Chart(ownerCtx, {
+          type: 'doughnut',
+          data: {
+            labels: analytics.ownerStats.map(o => o.owner),
+            datasets: [{
+              data: analytics.ownerStats.map(o => o.total),
+              backgroundColor: ['#22d3ee', '#a855f7', '#10b981', '#fbbf24', '#f97316', '#ef4444']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } }
+          }
+        });
+      }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      
+      if (tabName === 'analytics') {
+        setTimeout(() => renderCharts(analyticsData), 100);
+      }
+    }
+
+    // Update item
     async function updateItem(itemId, field, value) {
       const item = checklistItems.find(i => i.id === itemId);
       if (!item) return;
 
       item[field] = value;
 
-      // Update select styling
       if (field === 'status') {
-        const select = document.getElementById(`status-${itemId}`);
-        select.className = 'select-input ' + (value === 'Completed' ? 'completed' : value === 'In Progress' ? 'in-progress' : 'pending');
+        const sel = document.getElementById(`status-${itemId}`);
+        sel.className = 'select-input ' + (value === 'Completed' ? 'completed' : value === 'In Progress' ? 'in-progress' : 'pending');
       }
 
-      // Debounce API calls
       clearTimeout(debounceTimers[itemId]);
       debounceTimers[itemId] = setTimeout(async () => {
         try {
@@ -1258,22 +1314,130 @@
               owner: item.owner,
               initiate_date: item.initiate_date,
               complete_date: item.complete_date,
+              due_date: item.due_date,
               remarks: item.remarks,
               updated_by: localStorage.getItem('userName') || 'Unknown'
             })
           });
-          showToast('Changes saved!');
-        } catch (error) {
-          console.error('Error updating item:', error);
-          showToast('Error saving changes');
+          showToast('Saved!');
+        } catch (e) {
+          showToast('Error saving');
         }
       }, 500);
     }
 
-    // Toggle phase expansion
-    function togglePhase(index) {
-      const phase = document.getElementById(`phase-${index}`);
-      phase.classList.toggle('expanded');
+    function togglePhase(idx) {
+      document.getElementById(`phase-${idx}`).classList.toggle('expanded');
+    }
+
+    // Comments
+    function openComments(itemId, itemText) {
+      document.getElementById('commentItemId').value = itemId;
+      document.getElementById('commentItemText').textContent = itemText;
+      loadComments(itemId);
+      document.getElementById('commentModal').classList.add('active');
+    }
+
+    async function loadComments(itemId) {
+      const comments = await fetch(`/api/checklist/${itemId}/comments`).then(r => r.json());
+      commentsData[itemId] = comments;
+      
+      const list = document.getElementById('commentsList');
+      if (comments.length === 0) {
+        list.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No comments yet</p>';
+      } else {
+        list.innerHTML = comments.map(c => `
+          <div class="comment-item">
+            <div class="comment-header">
+              <span class="comment-author">${esc(c.author)}</span>
+              <span class="comment-time">${timeAgo(c.created_at)}</span>
+            </div>
+            <div class="comment-text">${esc(c.content)}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function addComment() {
+      const itemId = document.getElementById('commentItemId').value;
+      const content = document.getElementById('newCommentText').value.trim();
+      if (!content) return;
+
+      const author = localStorage.getItem('userName') || 'Anonymous';
+      
+      await fetch(`/api/checklist/${itemId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author, content, project_id: currentProjectId })
+      });
+
+      document.getElementById('newCommentText').value = '';
+      loadComments(itemId);
+      showToast('Comment added!');
+    }
+
+    // Export PDF
+    function exportPDF() {
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>RMEYE Checklist - ${projectData.name}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #333; border-bottom: 2px solid #22d3ee; padding-bottom: 10px; }
+            h2 { color: #666; margin-top: 30px; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+            th { background: #f5f5f5; }
+            .completed { background: #d1fae5; }
+            .in-progress { background: #dbeafe; }
+            .pending { background: #fef3c7; }
+            .stats { display: flex; gap: 20px; margin: 20px 0; }
+            .stat { text-align: center; padding: 15px; background: #f5f5f5; border-radius: 8px; }
+            .stat-value { font-size: 24px; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h1>📋 ${projectData.name}</h1>
+          <p><strong>Customer:</strong> ${projectData.customer || 'N/A'} | <strong>Created by:</strong> ${projectData.created_by}</p>
+          <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+      `);
+
+      // Add stats
+      const applicable = checklistItems.filter(i => i.applicability !== 'Not Applicable').length;
+      const completed = checklistItems.filter(i => i.status === 'Completed').length;
+      const pct = applicable > 0 ? Math.round((completed / applicable) * 100) : 0;
+
+      printWindow.document.write(`
+        <div class="stats">
+          <div class="stat"><div class="stat-value">${pct}%</div><div>Complete</div></div>
+          <div class="stat"><div class="stat-value">${completed}</div><div>Completed</div></div>
+          <div class="stat"><div class="stat-value">${checklistItems.filter(i => i.status === 'In Progress').length}</div><div>In Progress</div></div>
+          <div class="stat"><div class="stat-value">${checklistItems.filter(i => !i.status || i.status === 'Pending').length}</div><div>Pending</div></div>
+        </div>
+      `);
+
+      // Group and add items
+      const grouped = {};
+      checklistItems.forEach(item => {
+        const key = `${item.phase} - ${item.section}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(item);
+      });
+
+      Object.entries(grouped).forEach(([section, items]) => {
+        printWindow.document.write(`<h2>${section}</h2><table><tr><th>Item</th><th>Status</th><th>Owner</th><th>Due</th><th>Remarks</th></tr>`);
+        items.forEach(item => {
+          const cls = item.status === 'Completed' ? 'completed' : item.status === 'In Progress' ? 'in-progress' : 'pending';
+          printWindow.document.write(`<tr class="${cls}"><td>${item.item_text}</td><td>${item.status || 'Pending'}</td><td>${item.owner || '-'}</td><td>${item.due_date || '-'}</td><td>${item.remarks || '-'}</td></tr>`);
+        });
+        printWindow.document.write('</table>');
+      });
+
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.print();
     }
 
     // Modal functions
@@ -1282,176 +1446,115 @@
       document.getElementById('projectName').focus();
     }
 
-    function closeModal() {
-      document.getElementById('newProjectModal').classList.remove('active');
-      document.getElementById('newProjectForm').reset();
-    }
-
-    // Edit Modal
-    function showEditModal(projectId, projectName, customerName) {
-      document.getElementById('editProjectId').value = projectId;
-      document.getElementById('editProjectName').value = projectName;
-      document.getElementById('editCustomerName').value = customerName;
+    function showEditModal(id, name, customer) {
+      document.getElementById('editProjectId').value = id;
+      document.getElementById('editProjectName').value = name;
+      document.getElementById('editCustomerName').value = customer;
       document.getElementById('editProjectModal').classList.add('active');
-      document.getElementById('editProjectName').focus();
     }
 
-    function closeEditModal() {
-      document.getElementById('editProjectModal').classList.remove('active');
-      document.getElementById('editProjectForm').reset();
-    }
-
-    // Delete Modal
-    function showDeleteModal(projectId, projectName) {
-      document.getElementById('deleteProjectId').value = projectId;
-      document.getElementById('deleteProjectName').textContent = projectName;
+    function showDeleteModal(id, name) {
+      document.getElementById('deleteProjectId').value = id;
+      document.getElementById('deleteProjectName').textContent = name;
       document.getElementById('deleteConfirmModal').classList.add('active');
     }
 
-    function closeDeleteModal() {
-      document.getElementById('deleteConfirmModal').classList.remove('active');
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
     }
 
-    // Edit project form submission
-    document.getElementById('editProjectForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const projectId = document.getElementById('editProjectId').value;
-      const name = document.getElementById('editProjectName').value.trim();
-      const customer = document.getElementById('editCustomerName').value.trim();
-
-      if (!name) return;
-
-      try {
-        await fetch(`/api/projects/${projectId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, customer })
-        });
-
-        closeEditModal();
-        showToast('Project updated successfully!');
-        
-        // Refresh based on current view
-        if (currentProjectId) {
-          loadProjectView(currentProjectId);
-        } else {
-          loadDashboard();
-        }
-      } catch (error) {
-        console.error('Error updating project:', error);
-        showToast('Error updating project');
-      }
-    });
-
-    // Confirm delete project
-    async function confirmDeleteProject() {
-      const projectId = document.getElementById('deleteProjectId').value;
-
-      try {
-        await fetch(`/api/projects/${projectId}`, { method: 'DELETE' });
-        
-        closeDeleteModal();
-        showToast('Project deleted successfully!');
-        
-        // Navigate to dashboard if we were viewing the deleted project
-        if (currentProjectId === projectId) {
-          navigateToDashboard();
-        } else {
-          loadDashboard();
-        }
-      } catch (error) {
-        console.error('Error deleting project:', error);
-        showToast('Error deleting project');
-      }
-    }
-
-    // Duplicate project
-    async function duplicateProject(projectId) {
-      try {
-        const response = await fetch(`/api/projects/${projectId}/duplicate`, { method: 'POST' });
-        const newProject = await response.json();
-        
-        showToast(`Project duplicated! New project: ${newProject.name}`);
-        loadDashboard();
-      } catch (error) {
-        console.error('Error duplicating project:', error);
-        showToast('Error duplicating project');
-      }
-    }
-
-    // Form submission
+    // Form handlers
     document.getElementById('newProjectForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
       const name = document.getElementById('projectName').value.trim();
       const customer = document.getElementById('customerName').value.trim();
       const created_by = document.getElementById('createdBy').value.trim();
-
       if (!name || !created_by) return;
 
-      // Save user name for future
       localStorage.setItem('userName', created_by);
 
-      try {
-        const response = await fetch('/api/projects', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, customer, created_by })
-        });
+      const project = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, customer, created_by })
+      }).then(r => r.json());
 
-        const project = await response.json();
-        closeModal();
-        navigateToProject(project.id);
-      } catch (error) {
-        console.error('Error creating project:', error);
-      }
+      closeModal('newProjectModal');
+      document.getElementById('newProjectForm').reset();
+      navigateToProject(project.id);
     });
 
+    document.getElementById('editProjectForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editProjectId').value;
+      const name = document.getElementById('editProjectName').value.trim();
+      const customer = document.getElementById('editCustomerName').value.trim();
+
+      await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, customer })
+      });
+
+      closeModal('editProjectModal');
+      showToast('Project updated!');
+      currentProjectId ? loadProjectView(currentProjectId) : loadDashboard();
+    });
+
+    async function confirmDeleteProject() {
+      const id = document.getElementById('deleteProjectId').value;
+      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      closeModal('deleteConfirmModal');
+      showToast('Project deleted!');
+      if (currentProjectId === id) navigateToDashboard();
+      else loadDashboard();
+    }
+
+    async function duplicateProject(id) {
+      const p = await fetch(`/api/projects/${id}/duplicate`, { method: 'POST' }).then(r => r.json());
+      showToast(`Duplicated: ${p.name}`);
+      loadDashboard();
+    }
+
     // Navigation
-    function navigateToProject(projectId) {
-      window.history.pushState({}, '', `/project/${projectId}`);
-      currentProjectId = projectId;
-      loadProjectView(projectId);
+    function navigateToProject(id) {
+      history.pushState({}, '', `/project/${id}`);
+      currentProjectId = id;
+      loadProjectView(id);
     }
 
     function navigateToDashboard() {
-      window.history.pushState({}, '', '/');
+      history.pushState({}, '', '/');
       currentProjectId = null;
       loadDashboard();
-      document.getElementById('navActions').innerHTML = `
-        <button class="btn btn-primary" onclick="showNewProjectModal()">
-          <span>+</span> New Project
-        </button>
-      `;
     }
 
-    // Copy share link
-    function copyShareLink() {
-      const input = document.getElementById('shareLink');
-      input.select();
+    function copyLink() {
+      document.getElementById('shareLink').select();
       document.execCommand('copy');
-      showToast('Link copied to clipboard!');
+      showToast('Link copied!');
     }
 
-    // Toast notification
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+    function showToast(msg) {
+      document.getElementById('toastMessage').textContent = msg;
+      document.getElementById('toast').classList.add('show');
+      setTimeout(() => document.getElementById('toast').classList.remove('show'), 2500);
     }
 
-    // Escape HTML
-    function escapeHtml(str) {
+    function esc(str) {
       if (!str) return '';
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Handle browser back/forward
-    window.addEventListener('popstate', init);
+    function timeAgo(date) {
+      const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+      if (seconds < 60) return 'just now';
+      if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+      if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+      return Math.floor(seconds / 86400) + 'd ago';
+    }
 
-    // Initialize
+    window.addEventListener('popstate', init);
     init();
   </script>
 </body>
