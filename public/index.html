@@ -630,10 +630,46 @@
 
     .select-input:focus, .text-input:focus, .date-input:focus { outline: none; border-color: var(--accent-cyan); }
 
-    .select-input.completed { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1); }
-    .select-input.in-progress { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); }
-    .select-input.pending { border-color: var(--accent-yellow); background: rgba(251, 191, 36, 0.1); }
-    .select-input.not-applicable { border-color: var(--text-muted); background: rgba(100, 116, 139, 0.1); color: var(--text-muted); }
+    .select-input.completed { 
+      border-color: #059669; 
+      background: #065f46; 
+      color: #6ee7b7;
+    }
+    .select-input.in-progress { 
+      border-color: #2563eb; 
+      background: #1e3a8a; 
+      color: #93c5fd;
+    }
+    .select-input.pending { 
+      border-color: #d97706; 
+      background: #78350f; 
+      color: #fcd34d;
+    }
+    .select-input.not-applicable { 
+      border-color: #4b5563; 
+      background: #1f2937; 
+      color: #9ca3af; 
+    }
+
+    /* Owner dropdown styles */
+    .owner-select {
+      padding: 0.4rem 0.6rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      min-width: 100px;
+    }
+
+    .owner-select:focus { outline: none; border-color: var(--accent-cyan); }
+
+    .owner-select.sme { border-color: #8b5cf6; background: #4c1d95; color: #c4b5fd; }
+    .owner-select.cst { border-color: #06b6d4; background: #164e63; color: #67e8f9; }
+    .owner-select.pm { border-color: #f59e0b; background: #78350f; color: #fcd34d; }
+    .owner-select.tl { border-color: #10b981; background: #064e3b; color: #6ee7b7; }
 
     .overdue-badge {
       display: inline-block;
@@ -984,28 +1020,20 @@
       document.getElementById('mainContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       
       try {
-        const [project, items, progress, analytics, activity, comments] = await Promise.all([
+        const [project, items, progress, analytics] = await Promise.all([
           fetch(`/api/projects/${projectId}`).then(r => r.json()),
           fetch(`/api/projects/${projectId}/checklist`).then(r => r.json()),
           fetch(`/api/projects/${projectId}/progress`).then(r => r.json()),
-          fetch(`/api/projects/${projectId}/analytics`).then(r => r.json()),
-          fetch(`/api/projects/${projectId}/activity`).then(r => r.json()),
-          fetch(`/api/projects/${projectId}/comments`).then(r => r.json())
+          fetch(`/api/projects/${projectId}/analytics`).then(r => r.json())
         ]);
 
         projectData = project;
         checklistItems = items;
         analyticsData = analytics;
-        activityData = activity;
-        
-        // Group comments by item
+        activityData = [];
         commentsData = {};
-        comments.forEach(c => {
-          if (!commentsData[c.item_id]) commentsData[c.item_id] = [];
-          commentsData[c.item_id].push(c);
-        });
 
-        renderProjectView(project, items, progress, analytics, activity);
+        renderProjectView(project, items, progress, analytics, []);
         
         document.getElementById('navActions').innerHTML = `
           <button class="btn btn-export" onclick="exportPDF()">📄 Export PDF</button>
@@ -1143,7 +1171,15 @@
                     <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
                   </select>
                 </td>
-                <td><input type="text" class="text-input" value="${esc(item.owner || '')}" placeholder="Name" onchange="updateItem(${item.id}, 'owner', this.value)"></td>
+                <td>
+                  <select class="owner-select ${(item.owner || '').toLowerCase()}" onchange="updateOwner(${item.id}, this)">
+                    <option value="">Select</option>
+                    <option value="SME" ${item.owner === 'SME' ? 'selected' : ''}>SME</option>
+                    <option value="CST" ${item.owner === 'CST' ? 'selected' : ''}>CST</option>
+                    <option value="PM" ${item.owner === 'PM' ? 'selected' : ''}>PM</option>
+                    <option value="TL" ${item.owner === 'TL' ? 'selected' : ''}>TL</option>
+                  </select>
+                </td>
                 <td><input type="date" class="date-input" value="${item.due_date || ''}" onchange="updateItem(${item.id}, 'due_date', this.value)"></td>
                 <td><input type="date" class="date-input" value="${item.complete_date || ''}" onchange="updateItem(${item.id}, 'complete_date', this.value)"></td>
                 <td><input type="text" class="text-input" value="${esc(item.remarks || '')}" placeholder="Notes" onchange="updateItem(${item.id}, 'remarks', this.value)"></td>
@@ -1288,6 +1324,13 @@
       if (tabName === 'analytics') {
         setTimeout(() => renderCharts(analyticsData), 100);
       }
+    }
+
+    // Update owner with styling
+    function updateOwner(itemId, selectEl) {
+      const value = selectEl.value;
+      selectEl.className = 'owner-select ' + value.toLowerCase();
+      updateItem(itemId, 'owner', value);
     }
 
     // Update item

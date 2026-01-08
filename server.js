@@ -16,7 +16,6 @@ db.exec(`
     name TEXT NOT NULL,
     customer TEXT,
     created_by TEXT,
-    due_date TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
@@ -32,7 +31,6 @@ db.exec(`
     owner TEXT,
     initiate_date TEXT,
     complete_date TEXT,
-    due_date TEXT,
     remarks TEXT,
     updated_by TEXT,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -44,30 +42,6 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT UNIQUE,
     role TEXT
-  );
-
-  CREATE TABLE IF NOT EXISTS comments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_id INTEGER NOT NULL,
-    project_id TEXT NOT NULL,
-    author TEXT NOT NULL,
-    content TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES checklist_items(id),
-    FOREIGN KEY (project_id) REFERENCES projects(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS activity_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    project_id TEXT NOT NULL,
-    item_id INTEGER,
-    action TEXT NOT NULL,
-    field_changed TEXT,
-    old_value TEXT,
-    new_value TEXT,
-    user_name TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id)
   );
 `);
 
@@ -230,24 +204,13 @@ app.get('/api/projects/:id/checklist', (req, res) => {
 
 // Update checklist item
 app.put('/api/checklist/:itemId', (req, res) => {
-  const { applicability, status, owner, initiate_date, complete_date, due_date, remarks, updated_by } = req.body;
-  
-  // Get old values for activity log
-  const oldItem = db.prepare('SELECT * FROM checklist_items WHERE id = ?').get(req.params.itemId);
+  const { applicability, status, owner, initiate_date, complete_date, remarks, updated_by } = req.body;
   
   db.prepare(`
     UPDATE checklist_items 
-    SET applicability = ?, status = ?, owner = ?, initiate_date = ?, complete_date = ?, due_date = ?, remarks = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP
+    SET applicability = ?, status = ?, owner = ?, initiate_date = ?, complete_date = ?, remarks = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `).run(applicability, status, owner, initiate_date, complete_date, due_date, remarks, updated_by, req.params.itemId);
-  
-  // Log activity if status changed
-  if (oldItem && oldItem.status !== status) {
-    db.prepare(`
-      INSERT INTO activity_log (project_id, item_id, action, field_changed, old_value, new_value, user_name)
-      VALUES (?, ?, 'status_change', 'status', ?, ?, ?)
-    `).run(oldItem.project_id, req.params.itemId, oldItem.status || 'Pending', status, updated_by || 'Unknown');
-  }
+  `).run(applicability, status, owner, initiate_date, complete_date, remarks, updated_by, req.params.itemId);
   
   res.json({ success: true });
 });
@@ -308,77 +271,6 @@ app.post('/api/projects/:id/duplicate', (req, res) => {
   res.json({ id: newId, name: newName });
 });
 
-// Comments API
-app.get('/api/projects/:projectId/comments', (req, res) => {
-  const comments = db.prepare(`
-    SELECT c.*, ci.item_text 
-    FROM comments c 
-    LEFT JOIN checklist_items ci ON c.item_id = ci.id
-    WHERE c.project_id = ? 
-    ORDER BY c.created_at DESC
-  `).all(req.params.projectId);
-  res.json(comments);
-});
-
-app.get('/api/checklist/:itemId/comments', (req, res) => {
-  const comments = db.prepare('SELECT * FROM comments WHERE item_id = ? ORDER BY created_at DESC').all(req.params.itemId);
-  res.json(comments);
-});
-
-app.post('/api/checklist/:itemId/comments', (req, res) => {
-  const { author, content, project_id } = req.body;
-  const result = db.prepare('INSERT INTO comments (item_id, project_id, author, content) VALUES (?, ?, ?, ?)').run(req.params.itemId, project_id, author, content);
-  
-  // Log activity
-  db.prepare(`
-    INSERT INTO activity_log (project_id, item_id, action, user_name)
-    VALUES (?, ?, 'comment_added', ?)
-  `).run(project_id, req.params.itemId, author);
-  
-  res.json({ id: result.lastInsertRowid, author, content, created_at: new Date().toISOString() });
-});
-
-app.delete('/api/comments/:commentId', (req, res) => {
-  db.prepare('DELETE FROM comments WHERE id = ?').run(req.params.commentId);
-  res.json({ success: true });
-});
-
-// Activity Log API
-app.get('/api/projects/:projectId/activity', (req, res) => {
-  const activities = db.prepare(`
-    SELECT a.*, ci.item_text 
-    FROM activity_log a 
-    LEFT JOIN checklist_items ci ON a.item_id = ci.id
-    WHERE a.project_id = ? 
-    ORDER BY a.created_at DESC 
-    LIMIT 50
-  `).all(req.params.projectId);
-  res.json(activities);
-});
-
-// Export project data for PDF
-app.get('/api/projects/:id/export', (req, res) => {
-  const project = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id);
-  if (!project) {
-    return res.status(404).json({ error: 'Project not found' });
-  }
-  
-  const items = db.prepare('SELECT * FROM checklist_items WHERE project_id = ? ORDER BY id').all(req.params.id);
-  const progress = db.prepare(`
-    SELECT 
-      COUNT(*) as total,
-      SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) as completed,
-      SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) as in_progress,
-      SUM(CASE WHEN status = 'Pending' OR status IS NULL THEN 1 ELSE 0 END) as pending,
-      SUM(CASE WHEN applicability = 'Not Applicable' THEN 1 ELSE 0 END) as not_applicable
-    FROM checklist_items WHERE project_id = ?
-  `).get(req.params.id);
-  
-  const comments = db.prepare('SELECT c.*, ci.item_text FROM comments c LEFT JOIN checklist_items ci ON c.item_id = ci.id WHERE c.project_id = ? ORDER BY c.created_at DESC').all(req.params.id);
-  
-  res.json({ project, items, progress, comments });
-});
-
 // Get phase-wise analytics
 app.get('/api/projects/:id/analytics', (req, res) => {
   const phaseStats = db.prepare(`
@@ -406,16 +298,7 @@ app.get('/api/projects/:id/analytics', (req, res) => {
     ORDER BY total DESC
   `).all(req.params.id);
   
-  const overdueItems = db.prepare(`
-    SELECT * FROM checklist_items 
-    WHERE project_id = ? 
-    AND due_date IS NOT NULL 
-    AND due_date < date('now') 
-    AND status != 'Completed'
-    ORDER BY due_date
-  `).all(req.params.id);
-  
-  res.json({ phaseStats, ownerStats, overdueItems });
+  res.json({ phaseStats, ownerStats, overdueItems: [] });
 });
 
 // Serve the main app
