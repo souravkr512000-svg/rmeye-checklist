@@ -241,6 +241,83 @@
     .stat-progress { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
     .stat-pending { background: rgba(251, 191, 36, 0.15); color: var(--accent-yellow); }
 
+    /* Project Action Buttons */
+    .project-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    .btn-action:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .btn-action.edit:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .btn-action.duplicate:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
+    .btn-action.delete:hover { border-color: var(--accent-red); color: var(--accent-red); }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--accent-red), #dc2626);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Project header actions */
+    .project-header-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn-icon {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-card);
+      border-color: var(--accent-cyan);
+      color: var(--text-primary);
+    }
+
+    .btn-icon.danger:hover {
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
     .new-project-card {
       background: transparent;
       border: 2px dashed var(--border-color);
@@ -799,6 +876,44 @@
     </div>
   </div>
 
+  <!-- Edit Project Modal -->
+  <div class="modal-overlay" id="editProjectModal">
+    <div class="modal">
+      <h2>✏️ Edit Project</h2>
+      <form id="editProjectForm">
+        <input type="hidden" id="editProjectId">
+        <div class="form-group">
+          <label for="editProjectName">Project Name *</label>
+          <input type="text" id="editProjectName" placeholder="Project Name" required>
+        </div>
+        <div class="form-group">
+          <label for="editCustomerName">Customer Name</label>
+          <input type="text" id="editCustomerName" placeholder="Customer Name">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteConfirmModal">
+    <div class="modal">
+      <h2>🗑️ Delete Project</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+        Are you sure you want to delete <strong id="deleteProjectName" style="color: var(--accent-red);"></strong>?<br>
+        This action cannot be undone. All checklist data will be permanently lost.
+      </p>
+      <input type="hidden" id="deleteProjectId">
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDeleteProject()">Delete Project</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast">
     <span class="toast-icon">✓</span>
@@ -851,19 +966,32 @@
 
       for (const project of projects) {
         html += `
-          <div class="project-card" onclick="navigateToProject('${project.id}')">
-            <h3>${escapeHtml(project.name)}</h3>
-            <div class="project-meta">
-              ${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}
-              Created: ${new Date(project.created_at).toLocaleDateString()}
+          <div class="project-card">
+            <div onclick="navigateToProject('${project.id}')" style="cursor: pointer;">
+              <h3>${escapeHtml(project.name)}</h3>
+              <div class="project-meta">
+                ${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}
+                Created: ${new Date(project.created_at).toLocaleDateString()}
+              </div>
+              <div class="project-progress" id="progress-${project.id}">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-stats">
+                  <span>Loading...</span>
+                </div>
+              </div>
             </div>
-            <div class="project-progress" id="progress-${project.id}">
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 0%"></div>
-              </div>
-              <div class="progress-stats">
-                <span>Loading...</span>
-              </div>
+            <div class="project-actions">
+              <button class="btn-action edit" onclick="event.stopPropagation(); showEditModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}', '${escapeHtml(project.customer || '').replace(/'/g, "\\'")}')">
+                ✏️ Edit
+              </button>
+              <button class="btn-action duplicate" onclick="event.stopPropagation(); duplicateProject('${project.id}')">
+                📋 Duplicate
+              </button>
+              <button class="btn-action delete" onclick="event.stopPropagation(); showDeleteModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}')">
+                🗑️ Delete
+              </button>
             </div>
           </div>
         `;
@@ -948,6 +1076,17 @@
             <div class="project-info">
               <h2>${escapeHtml(project.name)}</h2>
               <p>${project.customer ? `Customer: ${escapeHtml(project.customer)} • ` : ''}Created by ${escapeHtml(project.created_by || 'Unknown')}</p>
+              <div class="project-header-actions">
+                <button class="btn-icon" onclick="showEditModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}', '${escapeHtml(project.customer || '').replace(/'/g, "\\'")}')">
+                  ✏️ Edit Project
+                </button>
+                <button class="btn-icon" onclick="duplicateProject('${project.id}')">
+                  📋 Duplicate
+                </button>
+                <button class="btn-icon danger" onclick="showDeleteModal('${project.id}', '${escapeHtml(project.name).replace(/'/g, "\\'")}')">
+                  🗑️ Delete
+                </button>
+              </div>
             </div>
             <div class="share-box">
               <span>🔗 Share Link:</span>
@@ -1146,6 +1285,99 @@
     function closeModal() {
       document.getElementById('newProjectModal').classList.remove('active');
       document.getElementById('newProjectForm').reset();
+    }
+
+    // Edit Modal
+    function showEditModal(projectId, projectName, customerName) {
+      document.getElementById('editProjectId').value = projectId;
+      document.getElementById('editProjectName').value = projectName;
+      document.getElementById('editCustomerName').value = customerName;
+      document.getElementById('editProjectModal').classList.add('active');
+      document.getElementById('editProjectName').focus();
+    }
+
+    function closeEditModal() {
+      document.getElementById('editProjectModal').classList.remove('active');
+      document.getElementById('editProjectForm').reset();
+    }
+
+    // Delete Modal
+    function showDeleteModal(projectId, projectName) {
+      document.getElementById('deleteProjectId').value = projectId;
+      document.getElementById('deleteProjectName').textContent = projectName;
+      document.getElementById('deleteConfirmModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteConfirmModal').classList.remove('active');
+    }
+
+    // Edit project form submission
+    document.getElementById('editProjectForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const projectId = document.getElementById('editProjectId').value;
+      const name = document.getElementById('editProjectName').value.trim();
+      const customer = document.getElementById('editCustomerName').value.trim();
+
+      if (!name) return;
+
+      try {
+        await fetch(`/api/projects/${projectId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, customer })
+        });
+
+        closeEditModal();
+        showToast('Project updated successfully!');
+        
+        // Refresh based on current view
+        if (currentProjectId) {
+          loadProjectView(currentProjectId);
+        } else {
+          loadDashboard();
+        }
+      } catch (error) {
+        console.error('Error updating project:', error);
+        showToast('Error updating project');
+      }
+    });
+
+    // Confirm delete project
+    async function confirmDeleteProject() {
+      const projectId = document.getElementById('deleteProjectId').value;
+
+      try {
+        await fetch(`/api/projects/${projectId}`, { method: 'DELETE' });
+        
+        closeDeleteModal();
+        showToast('Project deleted successfully!');
+        
+        // Navigate to dashboard if we were viewing the deleted project
+        if (currentProjectId === projectId) {
+          navigateToDashboard();
+        } else {
+          loadDashboard();
+        }
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        showToast('Error deleting project');
+      }
+    }
+
+    // Duplicate project
+    async function duplicateProject(projectId) {
+      try {
+        const response = await fetch(`/api/projects/${projectId}/duplicate`, { method: 'POST' });
+        const newProject = await response.json();
+        
+        showToast(`Project duplicated! New project: ${newProject.name}`);
+        loadDashboard();
+      } catch (error) {
+        console.error('Error duplicating project:', error);
+        showToast('Error duplicating project');
+      }
     }
 
     // Form submission

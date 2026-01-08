@@ -231,11 +231,44 @@ app.get('/api/projects/:id/progress', (req, res) => {
   res.json(stats);
 });
 
+// Update project
+app.put('/api/projects/:id', (req, res) => {
+  const { name, customer } = req.body;
+  db.prepare('UPDATE projects SET name = ?, customer = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(name, customer, req.params.id);
+  res.json({ success: true });
+});
+
 // Delete project
 app.delete('/api/projects/:id', (req, res) => {
   db.prepare('DELETE FROM checklist_items WHERE project_id = ?').run(req.params.id);
   db.prepare('DELETE FROM projects WHERE id = ?').run(req.params.id);
   res.json({ success: true });
+});
+
+// Duplicate project
+app.post('/api/projects/:id/duplicate', (req, res) => {
+  const originalProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id);
+  if (!originalProject) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+
+  const newId = uuidv4().substring(0, 8);
+  const newName = `${originalProject.name} (Copy)`;
+  
+  db.prepare('INSERT INTO projects (id, name, customer, created_by) VALUES (?, ?, ?, ?)').run(newId, newName, originalProject.customer, originalProject.created_by);
+  
+  // Copy all checklist items with their status
+  const items = db.prepare('SELECT * FROM checklist_items WHERE project_id = ?').all(req.params.id);
+  const insertItem = db.prepare(`
+    INSERT INTO checklist_items (project_id, phase, section, item_text, applicability, status, owner, initiate_date, complete_date, remarks) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  
+  for (const item of items) {
+    insertItem.run(newId, item.phase, item.section, item.item_text, item.applicability, item.status, item.owner, item.initiate_date, item.complete_date, item.remarks);
+  }
+  
+  res.json({ id: newId, name: newName });
 });
 
 // Serve the main app
